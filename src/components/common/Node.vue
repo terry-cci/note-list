@@ -19,7 +19,7 @@ function onBackspace() {
 
 <template>
   <li class="list-none" :data-id="node.id">
-    <span class="flex items-start">
+    <span class="flex items-start group">
       <button
         class="w-10 h-8 relative group grid place-items-center flex-shrink-0"
       >
@@ -57,6 +57,13 @@ function onBackspace() {
           {{ node.content }}
         </p>
       </div>
+
+      <button
+        class="p-1 opacity-0 group-hover:opacity-100 group-hover:active:opacity-70"
+        @click="nodes.remove(node)"
+      >
+        X
+      </button>
     </span>
     <ul
       class="ml-9 flex flex-col overflow-hidden"

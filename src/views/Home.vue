@@ -58,6 +58,7 @@ const nodes = useNodes();
         <button
           class="border px-4 py-1 rounded ml-3 active:bg-gray-800"
           @click="nodes.nodes.push(nodes.newNode(''))"
+          v-if="!nodes.searchWord"
         >
           Add one
         </button>

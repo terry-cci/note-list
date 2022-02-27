@@ -153,8 +153,6 @@ export const useNodes = defineStore("nodes", {
         `[data-id="${this.focusNodeId}"] p`
       ) as HTMLInputElement;
 
-      console.debug(input);
-
       input.focus();
     },
 
@@ -171,11 +169,34 @@ export const useNodes = defineStore("nodes", {
     },
 
     init() {
-      const savedNodeStore = JSON.parse(
-        localStorage.getItem("nodeStore") ?? "{}"
-      );
+      const save = localStorage.getItem("nodeStore");
 
-      Object.assign(this.$state, savedNodeStore);
+      if (save) {
+        interface NodeStoreSave {
+          title: string;
+          curId: number;
+          nodes: {
+            collapsed: boolean;
+            content: string;
+            depth: number;
+            id: number;
+            parentId?: number;
+          }[];
+          focusNodeId: number;
+          searchWord: number;
+        }
+
+        const savedNodeStore = JSON.parse(save) as NodeStoreSave;
+
+        Object.assign(this.$state, savedNodeStore);
+
+        this.nodes = [];
+        savedNodeStore.nodes.forEach((n) => {
+          const node = new Node(n.id, n.content);
+          Object.assign(node, n);
+          this.nodes.push(node);
+        });
+      }
 
       watch(
         this.$state,
