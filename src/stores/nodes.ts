@@ -52,25 +52,6 @@ export const useNodes = defineStore("nodes", {
     },
   },
   actions: {
-    seed() {
-      this.nodes.push(this.newNode("pipqwehroqwuehroiqh"));
-      this.nodes.push(this.newNode("12312313"));
-      this.nodes.push(this.newNode("ABCDEFG"));
-      this.nodes.push(this.newNode("4444"));
-      this.nodes.push(this.newNode("QWERTYUqwoeiuryoqi"));
-      this.nodes.push(
-        this.newNode(
-          "qoperqprrqpupuqrupqruprqrqprrqpupuqruprqprrqpupuqrupqruprqrqprrqpupuqrupqruprqqruprqrquo"
-        )
-      );
-      this.nodes.push(this.newNode("97977977997979777777"));
-
-      this.getNodeById(2).parent = this.getNodeById(1);
-      this.getNodeById(5).parent = this.getNodeById(3);
-      this.getNodeById(6).parent = this.getNodeById(3);
-      this.getNodeById(7).parent = this.getNodeById(5);
-    },
-
     indent(node: Node) {
       const parent = node.parent;
       const siblings = parent === undefined ? this.rootNodes : parent.children;
@@ -154,6 +135,7 @@ export const useNodes = defineStore("nodes", {
         `[data-id="${this.focusNodeId}"] p`
       ) as HTMLInputElement;
 
+      input.click();
       input.focus();
     },
 
@@ -192,6 +174,7 @@ export const useNodes = defineStore("nodes", {
         Object.assign(this.$state, savedNodeStore);
 
         this.nodes = [];
+        this.dropOverNodeId = undefined;
         savedNodeStore.nodes.forEach((n) => {
           const node = new Node(n.id, n.content);
           Object.assign(node, n);
