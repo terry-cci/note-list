@@ -8,6 +8,7 @@ export const useNodes = defineStore("nodes", {
     curId: 1,
     nodes: [] as Node[],
     focusNodeId: undefined as number | undefined,
+    dropOverNodeId: undefined as number | undefined,
     searchWord: "",
   }),
   getters: {

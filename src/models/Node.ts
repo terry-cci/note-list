@@ -38,4 +38,14 @@ export class Node {
       return nodes.getChildrenOf(this);
     }
   }
+
+  public isAncestorOf(node: Node): boolean {
+    let n = node;
+    while (n.parent !== undefined) {
+      if (n.parent === this) return true;
+      n = n.parent;
+    }
+
+    return false;
+  }
 }

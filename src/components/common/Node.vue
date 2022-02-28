@@ -8,30 +8,56 @@ const input = ref<HTMLInputElement | null>(null);
 
 const nodes = useNodes();
 
-const canCollapse = computed(() => props.node.children.length > 1);
-
 function onBackspace() {
   if (!props.node.content.length) {
     nodes.remove(props.node);
   }
 }
+
+function onDragStart(e: DragEvent) {
+  if (e.dataTransfer) {
+    e.dataTransfer.setData("text/plain", props.node.id.toString());
+    e.dataTransfer.effectAllowed = "move";
+  }
+}
+
+function onDragOver(e: DragEvent) {
+  nodes.dropOverNodeId = props.node.id;
+}
+
+function onDrop(e: DragEvent) {
+  if (e.dataTransfer) {
+    const nodeId = parseInt(e.dataTransfer.getData("text/plain"));
+    const node = nodes.getNodeById(nodeId);
+
+    if (node !== props.node && !node.isAncestorOf(props.node)) {
+      node.parent = props.node.parent;
+      nodes.putNodeAfter(node, props.node);
+    }
+
+    nodes.dropOverNodeId = undefined;
+  }
+}
 </script>
 
 <template>
-  <li class="list-none" :data-id="node.id">
+  <li
+    class="list-none"
+    :data-id="node.id"
+    draggable="true"
+    @dragstart.stop="onDragStart"
+    @dragover.stop.prevent="onDragOver"
+    @drop.stop.prevent="onDrop"
+  >
     <span class="flex items-start group">
       <button
         class="w-10 h-8 relative group grid place-items-center flex-shrink-0"
       >
-        <span
-          class=""
-          :class="{ 'group-hover:opacity-0': canCollapse || node.collapsed }"
-        >
+        <span class="group-hover:opacity-0">
           {{ node.collapsed ? "⦿" : "●" }}
         </span>
         <span
           class="absolute inset-0 opacity-0 group-hover:opacity-100"
-          v-if="canCollapse || node.collapsed"
           @click="node.collapsed = !node.collapsed"
         >
           {{ node.collapsed ? "+" : "—" }}</span
@@ -58,8 +84,12 @@ function onBackspace() {
         </p>
       </div>
 
+      <span class="p-1 opacity-0 group-hover:opacity-50 ml-4">
+        #{{ node.id }}
+      </span>
+
       <button
-        class="p-1 opacity-0 group-hover:opacity-100 group-hover:active:opacity-70"
+        class="p-1 opacity-0 group-hover:opacity-100 group-hover:active:opacity-70 ml-4"
         @click="nodes.remove(node)"
       >
         X
@@ -72,4 +102,8 @@ function onBackspace() {
       <Node v-for="n in node.children" :node="n" :key="n.id" />
     </ul>
   </li>
+  <div
+    class="w-full bg-gray-50 h-0.5"
+    v-if="nodes.dropOverNodeId === node.id"
+  ></div>
 </template>
